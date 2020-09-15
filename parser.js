@@ -3,7 +3,7 @@ import POSTGRES_POOL from "./helpers/GetPostgresPool"
 import getAllEnterpriseRecords from "./helpers/CassandraHelper"
 import { incrementBlockCount, getRedisKeys, getBlockCount }  from "./helpers/RedisHelper"
 
-const enterprise_id = constants.enterprise_id;
+const enterprise = constants.enterprise;
 
 const setRedisKeys = async (enterprise_id) => {
     // get cassandra records
@@ -11,8 +11,8 @@ const setRedisKeys = async (enterprise_id) => {
     if(journey_report && journey_report.length > 0 ) {
         //loop through cassandra records
         for(let item in journey_report) {
-             const journey_id   =  journey_report["journey_id"]  
-             const component_id =  journey_report["component_id"]
+             const journey_id   =  item["journey_id"]  
+             const component_id =  item["component_id"]
              if(enterprise_id && journey_id && component_id) {
                 await incrementBlockCount(enterprise_id, journey_id, component_id)
              } else {
@@ -72,5 +72,5 @@ const processJourneyReports = async (enterprise_id) => {
     console.log("Insert into Journey Components Table completed.")
 
 }
-processJourneyReports(enterprise_id)
+processJourneyReports(enterprise)
 

@@ -29,7 +29,7 @@ const constants = {
     },
 
     //enterprise_id
-    enterprise_id : process.env.ENTERPRISE_ID || "5"
+    enterprise : process.env.ENTERPRISE || "0"
 
 }
 
