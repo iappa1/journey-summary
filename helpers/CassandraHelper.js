@@ -21,15 +21,20 @@ const initializeCassandraClient = async () => {
 // get all journey reports records for a particular enterprise.
 export const getAllEnterpriseRecords = async (enterprise_id) => {
 
-    let query = `SELECT * from factoreal.journey_report
+    try {
+        let query = `SELECT * from factoreal.journey_report
         WHERE
         enterprise_id = ${enterprise_id};`
 
-    // if the client is null, then initialize it
-    if (cassandra_client == null) {
-        await initializeCassandraClient()
-    }
-    const result = await cassandra_client.execute(query)
+        // if the client is null, then initialize it
+        if (cassandra_client == null) {
+            await initializeCassandraClient()
+        }
+        const result = await cassandra_client.execute(query)
 
-    return result.rows
+        return result.rows
+    } catch (error) {
+        console.log("error in getAllEnterpriseRecords")
+        console.log(error);
+    }
 }
