@@ -27,14 +27,7 @@ export const getRedisKeys = async (redisKey) => {
             port: constants.redis_port
         });
     }
-    await redis.keys(redisKey, function (err, keys) {
-        if (err) {
-            console.log("Error in getting alike KEYS: " + redisKey)
-        } else {
-            return keys
-        }
-    });
-
+    return await redis.keys(redisKey)
 }
 
 export const getBlockCount = async (enterprise_id, journey_id, component_id) => {
