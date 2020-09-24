@@ -20,7 +20,7 @@ export const incrementBlockCount = async (enterprise_id, journey_id, component_i
 
 }
 
-const getRedisKeys = async (redisKey) => {
+export const getRedisKeys = async (redisKey) => {
     if (redis == null) {
         redis = new Redis({
             host: constants.redis_host,
@@ -62,4 +62,25 @@ export const getBlockCount = async (enterprise_id, journey_id, component_id) => 
     return Number(block_count);
   }
 
-  export default getRedisKeys;
+  export const cleanUpKeys = async (rediskey) => {
+    if (redis == null) {
+      redis = new Redis({
+        host: constants.redis_host,
+        port: constants.redis_port
+      });
+    }
+    try {
+      redis.keys(rediskey).then(keys => {
+        const pipeline = redis.pipeline();
+        keys.forEach(key => pipeline.del(key));
+        return pipeline.exec();
+      });
+
+    } catch(error) {
+      console.log("Error in cleanUpKeys")
+      console.log(error)
+    }
+    
+  }
+
+  // export default getRedisKeys;

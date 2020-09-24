@@ -1,9 +1,21 @@
 import constants from "./constants";
 import POSTGRES_POOL from "./helpers/GetPostgresPool"
 import getAllEnterpriseRecords from "./helpers/CassandraHelper"
-import { incrementBlockCount, getRedisKeys, getBlockCount }  from "./helpers/RedisHelper"
+import { incrementBlockCount, getRedisKeys, getBlockCount, cleanUpKeys }  from "./helpers/RedisHelper"
 
 const enterprise = constants.enterprise;
+
+
+const cleanUpExistingKeys = async (enterprise_id) => {
+    try{
+        const redisLikeKey = `BLOCK_COUNT_enterprise_${enterprise_id}.*`;
+        await cleanUpKeys(redisLikeKey)
+        console.log("Cleaned up the Existing Redis Keys for enterprise: ",enterprise_id)
+    } catch(error) {
+        console.log("Error in cleanUpExistingKeys")
+        console.log(error);
+    }
+}
 
 const setRedisKeys = async (enterprise_id) => {
     try {
@@ -36,7 +48,8 @@ const setJourneyComponents = async (enterprise_id) => {
         const redisLikeKey = `BLOCK_COUNT_enterprise_${enterprise_id}.*`;
         const redisKeys = getRedisKeys(redisLikeKey)
         //loop over redis keys
-        for (const key of redisKeys) {
+        for (let index in redisKeys) {
+              let key = redisKeys[index]
             if (key.includes("BLOCK_COUNT_enterprise_") && key.includes("journey_") && key.includes("component_")) {
                 // parse the key and get enterprise_id, journey_id, component_id 
                 const journey_id = key.split(".")[1].split("_")[1]
@@ -66,6 +79,10 @@ const setJourneyComponents = async (enterprise_id) => {
 
 const processJourneyReports = async (enterprise_id) => {
     try {
+        console.log("Start Cleaning Existing Redis Keys for enterprise")
+        console.log("************************************************************")
+        await cleanUpExistingKeys(enterprise_id)
+        console.log("************************************************************")
         console.log("Start Copy Journey Reports from CASSANDRA to REDIS")
 
         await setRedisKeys(enterprise_id)
