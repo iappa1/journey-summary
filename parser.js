@@ -49,7 +49,7 @@ const setJourneyComponents = async (enterprise_id) => {
     try {
         // get matching redis keys
         const redisLikeKey = `BLOCK_COUNT_enterprise_${enterprise_id}.*`;
-        const redisKeys = getRedisKeys(redisLikeKey)
+        const redisKeys = await getRedisKeys(redisLikeKey)
         //loop over redis keys
         console.log("Found Redis Keys are: ", redisKeys.length)
         for (let index in redisKeys) {
@@ -57,16 +57,15 @@ const setJourneyComponents = async (enterprise_id) => {
               console.log("Processing Redis Key #: ", index)
             if (key.includes("BLOCK_COUNT_enterprise_") && key.includes("journey_") && key.includes("component_")) {
                 // parse the key and get enterprise_id, journey_id, component_id 
-                const journey_id = key.split(".")[1].split("_")[1]
-                const component_id = key.split(".")[2].split("_")[1]
+                const journey_id = Number(key.split(".")[1].split("_")[1])
+                const component_id = Number(key.split(".")[2].split("_")[1])
 
                 // getcache and update the same in journeycomponents table.
                 console.log("Inserting into journeycomponents for ENTERPRISE: " + enterprise_id + " JOURNEY: " + journey_id + " COMPONENT: " + component_id)
                 const block_count = await getBlockCount(enterprise_id, journey_id, component_id);
-                const insert_query = `insert into journeycomponents set count = ${block_count}
-                                   where enterprise=${enterprise_id}
-                                   and journeybuilder=${journey_id}
-                                   and component_id=${component_id};`;
+                const insert_query = `update journeycomponents set count = ${block_count}
+                                   where journeybuilder=${journey_id}
+                                   and component_id='${component_id}';`;
                 await POSTGRES_POOL.query(insert_query);
                 console.log("Insertion successful with count ", block_count);
 
