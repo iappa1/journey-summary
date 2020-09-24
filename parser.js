@@ -23,7 +23,10 @@ const setRedisKeys = async (enterprise_id) => {
         const journey_report = await getAllEnterpriseRecords(enterprise_id);
         if (journey_report && journey_report.length > 0) {
             //loop through cassandra records
-            for (let item in journey_report) {
+            console.log("Found Cassadra Records are: ",journey_report.length)
+            for (let index in journey_report) {
+                console.log("Processing record #: ", index+1)
+                let item = journey_report[index]
                 const journey_id = item["journey_id"]
                 const component_id = item["component_id"]
                 if (enterprise_id && journey_id && component_id) {
@@ -48,8 +51,10 @@ const setJourneyComponents = async (enterprise_id) => {
         const redisLikeKey = `BLOCK_COUNT_enterprise_${enterprise_id}.*`;
         const redisKeys = getRedisKeys(redisLikeKey)
         //loop over redis keys
+        console.log("Found Redis Keys are: ", redisKeys.length)
         for (let index in redisKeys) {
               let key = redisKeys[index]
+              console.log("Processing Redis Key #: ", index+1)
             if (key.includes("BLOCK_COUNT_enterprise_") && key.includes("journey_") && key.includes("component_")) {
                 // parse the key and get enterprise_id, journey_id, component_id 
                 const journey_id = key.split(".")[1].split("_")[1]
