@@ -19,7 +19,7 @@ const initializeCassandraClient = async () => {
 }
 
 // get all journey reports records for a particular enterprise.
-export const getAllEnterpriseRecords = async (enterprise_id) => {
+const getAllEnterpriseRecords = async (enterprise_id) => {
 
     try {
         let query = `SELECT * from factoreal.journey_report
@@ -38,3 +38,5 @@ export const getAllEnterpriseRecords = async (enterprise_id) => {
         console.log(error);
     }
 }
+
+export default getAllEnterpriseRecords;

@@ -20,7 +20,7 @@ export const incrementBlockCount = async (enterprise_id, journey_id, component_i
 
 }
 
-export const getRedisKeys = async (redisKey) => {
+const getRedisKeys = async (redisKey) => {
     if (redis == null) {
         redis = new Redis({
             host: constants.redis_host,
@@ -62,3 +62,4 @@ export const getBlockCount = async (enterprise_id, journey_id, component_id) => 
     return Number(block_count);
   }
 
+  export default getRedisKeys;
