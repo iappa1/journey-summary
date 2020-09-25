@@ -19,7 +19,7 @@ const initializeCassandraClient = async () => {
 }
 
 // get all journey reports records for a particular enterprise.
-const getAllEnterpriseRecords = async (enterprise_id) => {
+const getAllEnterpriseRecords1 = async (enterprise_id) => {
 
     try {
         let query = `SELECT * from factoreal.journey_report
@@ -33,6 +33,31 @@ const getAllEnterpriseRecords = async (enterprise_id) => {
         const result = await cassandra_client.execute(query)
 
         return result.rows
+    } catch (error) {
+        console.log("error in getAllEnterpriseRecords")
+        console.log(error);
+    }
+}
+
+const getAllEnterpriseRecords = async (enterprise_id) => {
+    try {
+        if (cassandra_client == null) {
+            await initializeCassandraClient()
+        }
+        let result = []
+        let query = `SELECT * from factoreal.journey_report
+        WHERE
+        enterprise_id = ${enterprise_id};`
+        let len = 0
+        const allRows = await cassandra_client.execute(query, [], { prepare: true });
+
+        for await (const row of allRows) {
+            len++;
+            console.log("Fectching Cassandra Record# ", len);
+            result.push(row)
+        }
+        return result
+        
     } catch (error) {
         console.log("error in getAllEnterpriseRecords")
         console.log(error);

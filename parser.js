@@ -16,7 +16,19 @@ const cleanUpExistingKeys = async (enterprise_id) => {
         console.log(error);
     }
 }
-
+// const getCassandraRecords = async(enterprise_id) => {
+//     try {
+//      const journey_report = await getAllEnterpriseRecords(enterprise_id);
+//       if (journey_report && journey_report.length > 0) {
+//         console.log("Found Cassadra Records are: ",journey_report.length)
+//       } else {
+//           console.log("Nothign found")
+//       }
+//     } catch(error) {
+//         console.log("Error in getCassandraRecords")
+//         console.log(error)
+//     }
+// }
 const setRedisKeys = async (enterprise_id) => {
     try {
         // get cassandra records
@@ -83,6 +95,8 @@ const setJourneyComponents = async (enterprise_id) => {
 
 const processJourneyReports = async (enterprise_id) => {
     try {
+
+        // await getCassandraRecords(enterprise_id)
         console.log("Start Cleaning Existing Redis Keys for enterprise")
         console.log("************************************************************")
         await cleanUpExistingKeys(enterprise_id)
